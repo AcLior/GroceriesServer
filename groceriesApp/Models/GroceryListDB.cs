@@ -114,7 +114,58 @@ namespace groceriesApp.Models
         }
 
 
-       
+        public int GetListID(string email, string listName)
+        {
+            SqlConnection con;
+            SqlCommand cmd;
+            // Add output parameter to get the return value
+            SqlParameter returnValue = new SqlParameter();
+            returnValue.ParameterName = "@ListItemID";
+            returnValue.Direction = System.Data.ParameterDirection.ReturnValue;
+
+            try
+            {
+                con = connect("myProjDB"); // create the connection
+            }
+            catch (Exception ex)
+            {
+                // write to log
+                throw (ex);
+            }
+
+            Dictionary<string, object> paramDic = new Dictionary<string, object>();
+            paramDic.Add("@Email", email);
+            paramDic.Add("@ListName", listName);
+
+            cmd = CreateCommandWithStoredProcedure("GetListItemID", con, paramDic); // create the command
+
+            // Add the returnValue parameter to the command
+            cmd.Parameters.Add(returnValue);
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+                // Print the return value (optional)
+                Console.WriteLine("Return Value: " + returnValue.Value.ToString());
+
+                // Get the return value
+                return Convert.ToInt32(returnValue.Value);
+            }
+            catch (Exception ex)
+            {
+                // write to log
+                throw (ex);
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    // close the db connection
+                    con.Close();
+                }
+            }
+        }
+
 
         ////---------------------------------------------------------------------------------
         //// Create the SqlCommand using a stored procedure

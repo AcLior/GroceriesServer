@@ -16,6 +16,12 @@ namespace groceriesApp.Models
             GroceryListDB dbs = new GroceryListDB();
             dbs.DeleteList(email,listName);
         }
+        public static int GetListID(string email,string listName)
+        {
+            GroceryListDB gl=new GroceryListDB();
+
+            return gl.GetListID(email,listName);
+        }
 
     }
 }

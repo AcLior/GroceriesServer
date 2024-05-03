@@ -19,7 +19,7 @@ namespace groceriesApp.Models
             return con;
         }
 
-        public void AddProduct(string email, string productName,string listName)
+        public void AddProduct(string email, string productName, string listName)
         {
             SqlConnection con;
             SqlCommand cmd;
@@ -27,7 +27,6 @@ namespace groceriesApp.Models
             try
             {
                 con = connect("myProjDB"); // create the connection
-
             }
             catch (Exception ex)
             {
@@ -35,26 +34,26 @@ namespace groceriesApp.Models
                 throw (ex);
             }
 
+            // Get the ListItemID
+            int listItemID = GroceryList.GetListID(email, listName);
+
             Dictionary<string, object> paramDic = new Dictionary<string, object>();
-          
             paramDic.Add("@Email", email);
             paramDic.Add("@ProductName", productName);
             paramDic.Add("@ListName", listName);
+            paramDic.Add("@ListItemID", listItemID);
 
-            cmd = CreateCommandWithStoredProcedure("AddProduct", con, paramDic);             // create the command
+            cmd = CreateCommandWithStoredProcedure("AddProduct", con, paramDic); // create the command
 
             try
             {
                 cmd.ExecuteNonQuery(); // execute the command
-
-
             }
             catch (Exception ex)
             {
                 // write to log
                 throw (ex);
             }
-
             finally
             {
                 if (con != null)
@@ -65,7 +64,8 @@ namespace groceriesApp.Models
             }
         }
 
-       public void DeleteProduct(string email,string listName,string productName)
+
+        public void DeleteProduct(string email,string listName,string productName)
         {
             SqlConnection con;
             SqlCommand cmd;
@@ -133,6 +133,7 @@ namespace groceriesApp.Models
 
             paramDic.Add("@Email", email);
             paramDic.Add("@CategoryName", categoryName);
+
 
 
             cmd = CreateCommandWithStoredProcedure("AddCategory", con, paramDic);             // create the command

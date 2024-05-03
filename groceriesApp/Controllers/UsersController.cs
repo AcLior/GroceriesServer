@@ -1,9 +1,11 @@
 ﻿using groceriesApp.Models;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace groceriesApp.Controllers
 {
+    
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
@@ -29,7 +31,24 @@ namespace groceriesApp.Controllers
             }
         }
 
+        [HttpGet]
 
+        public string Get()
+        {
+            try
+            {
+               
+
+                // Return success response
+                return "SUCCESS!!!!!" ;
+
+
+            }
+            catch (Exception e)
+            {
+                return "ERRORRRRRR";
+            }
+        }
 
         [HttpPost]
 

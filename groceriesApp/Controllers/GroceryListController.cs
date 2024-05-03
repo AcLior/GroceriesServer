@@ -58,7 +58,14 @@ namespace groceriesApp.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
+        // GET: api/<GroceryListController>
+        [HttpGet]
+        [Route("GetID/{email}/{listName}")]
+        public int GetID(string email,string listName)
+        {
 
-       
+            return GroceryList.GetListID(email,listName);
+        }
+
     }
 }
