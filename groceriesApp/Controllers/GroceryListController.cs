@@ -67,5 +67,23 @@ namespace groceriesApp.Controllers
             return GroceryList.GetListID(email,listName);
         }
 
+        // GET: api/<GroceryListController>
+        //[HttpGet]
+        //[Route("GetID/{email}")]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //[ProducesResponseType(StatusCodes.Status404NotFound)]
+        //public ActionResult<GroceryList[]> GetListByEmail(string email)
+        //{
+        //    try
+        //    {
+        //        GroceryList.GetListByEmail(email);
+        //        return Ok();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(StatusCodes.Status400BadRequest, ex.Message);
+        //    }
+        //}
+
     }
 }

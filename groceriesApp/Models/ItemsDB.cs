@@ -1,4 +1,5 @@
-﻿using System.Data.SqlClient;
+﻿using System.Data;
+using System.Data.SqlClient;
 
 namespace groceriesApp.Models
 {
@@ -19,8 +20,10 @@ namespace groceriesApp.Models
             return con;
         }
 
-        public void AddProduct(string email, string productName, string listName)
+        public Item[] AddProduct(Item item, string email)
         {
+            List<Item> itemList = new List<Item>();
+
             SqlConnection con;
             SqlCommand cmd;
 
@@ -34,20 +37,30 @@ namespace groceriesApp.Models
                 throw (ex);
             }
 
-            // Get the ListItemID
-            int listItemID = GroceryList.GetListID(email, listName);
-
-            Dictionary<string, object> paramDic = new Dictionary<string, object>();
-            paramDic.Add("@Email", email);
-            paramDic.Add("@ProductName", productName);
-            paramDic.Add("@ListName", listName);
-            paramDic.Add("@ListItemID", listItemID);
-
-            cmd = CreateCommandWithStoredProcedure("AddProduct", con, paramDic); // create the command
-
             try
             {
-                cmd.ExecuteNonQuery(); // execute the command
+                // Create the dictionary for stored procedure parameters
+                Dictionary<string, object> paramDic = new Dictionary<string, object>();
+                paramDic.Add("@Email", email);
+                paramDic.Add("@ProductName", item.ProductName);
+                paramDic.Add("@CategoryName", item.Category);
+                paramDic.Add("@Quantity", item.Quantity);
+                paramDic.Add("@IsDone", item.IsDone);
+                paramDic.Add("@Photo", item.Photo); // Add Photo parameter
+
+                // Add output parameter for ProductID
+                SqlParameter productIdParam = new SqlParameter("@ProductID", SqlDbType.Int);
+                productIdParam.Direction = ParameterDirection.Output;
+
+                // Execute the AddProduct stored procedure to add the new item
+                cmd = CreateCommandWithStoredProcedure("AddProduct", con, paramDic);
+                cmd.Parameters.Add(productIdParam);
+                cmd.ExecuteNonQuery();
+
+                // Get the newly generated product ID
+                int productId = Convert.ToInt32(productIdParam.Value);
+
+              
             }
             catch (Exception ex)
             {
@@ -62,39 +75,38 @@ namespace groceriesApp.Models
                     con.Close();
                 }
             }
+
+            // Return the array of items
+            return GetListByEmail(email).ToArray();
         }
 
 
-        public void DeleteProduct(string email,string listName,string productName)
+        public Item[] DeleteProduct( string productName, string email)
         {
+            List<Item> itemList = new List<Item>();
+
             SqlConnection con;
             SqlCommand cmd;
 
             try
             {
                 con = connect("myProjDB"); // create the connection
-
             }
             catch (Exception ex)
             {
                 // write to log
                 throw (ex);
             }
-
-            Dictionary<string, object> paramDic = new Dictionary<string, object>();
-            paramDic.Add("@Email", email);
-            paramDic.Add("@ListName", listName);
-            paramDic.Add("@ProductName", productName);
-
-
-
-
-            cmd = CreateCommandWithStoredProcedure("DeleteProduct", con, paramDic);             // create the command
 
             try
             {
-                cmd.ExecuteNonQuery(); // execute the command
+                // Execute the DeleteProduct stored procedure to delete the product
+                Dictionary<string, object> paramDic = new Dictionary<string, object>();
+                paramDic.Add("@Email", email);
+                paramDic.Add("@ProductName", productName);
 
+                cmd = CreateCommandWithStoredProcedure("DeleteProduct", con, paramDic);
+                cmd.ExecuteNonQuery();
 
             }
             catch (Exception ex)
@@ -102,7 +114,6 @@ namespace groceriesApp.Models
                 // write to log
                 throw (ex);
             }
-
             finally
             {
                 if (con != null)
@@ -111,37 +122,37 @@ namespace groceriesApp.Models
                     con.Close();
                 }
             }
+
+            // Return the array of items
+            return GetListByEmail(email).ToArray();
         }
 
-        public void AddCategory(string email, string categoryName)
+        public Item[] UpdateProduct(string productName, string email)
         {
+            List<Item> itemList = new List<Item>();
+
             SqlConnection con;
             SqlCommand cmd;
 
             try
             {
                 con = connect("myProjDB"); // create the connection
-
             }
             catch (Exception ex)
             {
                 // write to log
                 throw (ex);
             }
-
-            Dictionary<string, object> paramDic = new Dictionary<string, object>();
-
-            paramDic.Add("@Email", email);
-            paramDic.Add("@CategoryName", categoryName);
-
-
-
-            cmd = CreateCommandWithStoredProcedure("AddCategory", con, paramDic);             // create the command
 
             try
             {
-                cmd.ExecuteNonQuery(); // execute the command
+                // Execute the DeleteProduct stored procedure to delete the product
+                Dictionary<string, object> paramDic = new Dictionary<string, object>();
+                paramDic.Add("@Email", email);
+                paramDic.Add("@ProductName", productName);
 
+                cmd = CreateCommandWithStoredProcedure("UpdateIsDone", con, paramDic);
+                cmd.ExecuteNonQuery();
 
             }
             catch (Exception ex)
@@ -149,7 +160,6 @@ namespace groceriesApp.Models
                 // write to log
                 throw (ex);
             }
-
             finally
             {
                 if (con != null)
@@ -158,7 +168,71 @@ namespace groceriesApp.Models
                     con.Close();
                 }
             }
+
+            // Return the array of items
+            return GetListByEmail(email).ToArray();
         }
+
+        public List<Item> GetListByEmail(string email)
+        {
+            List<Item> itemList = new List<Item>();
+
+            SqlConnection con;
+            SqlCommand cmd;
+
+            try
+            {
+                con = connect("myProjDB"); // create the connection
+            }
+            catch (Exception ex)
+            {
+                // write to log
+                throw (ex);
+            }
+
+            try
+            {
+
+                // Fetch the updated list of items
+                cmd = new SqlCommand("GetListByEmail", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@Email", email);
+
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                // Read the result set and populate the item list
+                while (reader.Read())
+                {
+                    Item newItem = new Item();
+                    newItem.ProductName = reader["ProductName"].ToString();
+                    newItem.Category = reader["Category"].ToString();
+                    newItem.Quantity = Convert.ToInt32(reader["Quantity"]);
+                    newItem.IsDone = Convert.ToBoolean(reader["IsDone"]);
+                    newItem.Photo = reader["Photo"].ToString(); // Include Photo
+                    itemList.Add(newItem);
+                }
+
+                // Close the reader
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                // write to log
+                throw (ex);
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    // close the db connection
+                    con.Close();
+                }
+            }
+
+            // Return the list of items
+            return itemList;
+        }
+
 
         ////---------------------------------------------------------------------------------
         //// Create the SqlCommand using a stored procedure

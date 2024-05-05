@@ -2,32 +2,39 @@
 {
     public class Item
     {
-        public string Name { get; set; }    
+        public string ProductName { get; set; }    
         public string Category { get; set; }
 
-        public override string ToString()
-        {
-            return $" {Name} {Category}";
-        }
-        public void AddProduct(string email,string productName,string listName)
-        {
-            ItemsDB dbs = new ItemsDB();
-            dbs.AddProduct(email, productName, listName);
-        }
-        public void DeleteProduct(string email,string listName,string productName)
-        {
-            ItemsDB dbs = new ItemsDB();
-            dbs.DeleteProduct(email,listName,productName);
-        }
-        public void AddCategory(string email, string categoryName)
+        public string Photo { get; set; }
+
+        public int Quantity { get; set; }
+
+        public bool IsDone { get; set; }    
+                 
+                
+
+        public static Item[] AddProduct(Item item, string email)
         {
             ItemsDB dbs = new ItemsDB();
-            dbs.AddCategory(email, categoryName);
+            return dbs.AddProduct(item,email);
         }
-        //public void AddPhoto(string productName, string photo)
-        //{
-        //    ItemsDB dbs = new ItemsDB();
-        //    dbs.AddCategory(productName, photo);
-        //}
+        public static Item[]  DeleteProduct(string productName,string email)
+        {
+            ItemsDB dbs = new ItemsDB();
+            return dbs.DeleteProduct(productName,email);
+        }
+
+        public static Item[] UpdateProduct(string productName, string email)
+        {
+            ItemsDB dbs = new ItemsDB();
+            return dbs.UpdateProduct(productName, email);
+        }
+
+        public static List<Item> GetListByEmail(string email)
+        {
+            ItemsDB dbs = new ItemsDB();
+            return dbs.GetListByEmail(email);
+        }
+        
     }
 }

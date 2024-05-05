@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Data;
 using System.Data.SqlClient;
 
 namespace groceriesApp.Models
@@ -166,6 +167,72 @@ namespace groceriesApp.Models
             }
         }
 
+        //public List<Item> GetListByEmail(string email)
+        //{
+        //    List<Item> productList = new List<Item>();
+
+        //    SqlConnection con;
+        //    SqlCommand cmd;
+
+        //    try
+        //    {
+        //        con = connect("myProjDB"); // create the connection
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // write to log
+        //        throw (ex);
+        //    }
+
+        //    try
+        //    {
+        //        // Create the command
+        //        cmd = new SqlCommand("GetListByEmail", con);
+        //        cmd.CommandType = CommandType.StoredProcedure;
+
+        //        // Add parameters
+        //        cmd.Parameters.AddWithValue("@Email", email);
+
+        //        // Execute the command
+        //        SqlDataReader reader = cmd.ExecuteReader();
+
+        //        // Read the result set
+        //        while (reader.Read())
+        //        {
+        //            // Create a new product object
+        //            Item product = new Item();
+
+        //            // Populate the product object with data from the result set
+                    
+        //            product.ProductName = reader["ProductName"].ToString();
+        //            product.CategoryID = Convert.ToInt32(reader["CategoryID"]);
+        //            product.Photo = reader["Photo"].ToString();
+        //            product.Quantity = Convert.ToInt32(reader["Quantity"]);
+
+        //            // Add the product to the list
+        //            productList.Add(product);
+        //        }
+
+        //        // Close the reader
+        //        reader.Close();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // write to log
+        //        throw (ex);
+        //    }
+        //    finally
+        //    {
+        //        if (con != null)
+        //        {
+        //            // close the db connection
+        //            con.Close();
+        //        }
+        //    }
+
+        //    // Return the list of products
+        //    return productList;
+        //}
 
         ////---------------------------------------------------------------------------------
         //// Create the SqlCommand using a stored procedure

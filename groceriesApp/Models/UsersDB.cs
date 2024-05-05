@@ -22,7 +22,7 @@ namespace groceriesApp.Models
             return con;
         }
 
-        public void AddUser(User user)
+        public bool AddUser(User user)
         {
             SqlConnection con;
             SqlCommand cmd;
@@ -30,34 +30,31 @@ namespace groceriesApp.Models
             try
             {
                 con = connect("myProjDB"); // create the connection
-               
             }
             catch (Exception ex)
             {
                 // write to log
                 throw (ex);
             }
+
+            bool success = false;
 
             Dictionary<string, object> paramDic = new Dictionary<string, object>();
             paramDic.Add("@Email", user.Email);
             paramDic.Add("@Password", user.Password);
 
-
-
-            cmd = CreateCommandWithStoredProcedure("AddUser", con, paramDic);             // create the command
+            cmd = CreateCommandWithStoredProcedure("AddUser", con, paramDic); // create the command
 
             try
             {
-                cmd.ExecuteNonQuery(); // execute the command
-               
-              
+                // Execute the command and get the return value
+                success = (int)cmd.ExecuteScalar() == 1;
             }
             catch (Exception ex)
             {
                 // write to log
                 throw (ex);
             }
-
             finally
             {
                 if (con != null)
@@ -66,7 +63,10 @@ namespace groceriesApp.Models
                     con.Close();
                 }
             }
+
+            return success;
         }
+
 
         public void DeleteUser(string email)
         {

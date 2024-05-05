@@ -13,16 +13,12 @@ namespace groceriesApp.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
        
-        public IActionResult AddProduct(string email, string productName,string listName)
+        public IActionResult Post(Item item,string email)
         {
             try
             {
-
-                Item item = new Item();
-                item.AddProduct(email,productName,listName);
-
                 // Return success response
-                return Ok("Item added successfully.");
+                return Ok(Item.AddProduct(item, email));
             }
             catch (Exception ex)
             {
@@ -30,22 +26,19 @@ namespace groceriesApp.Controllers
             }
         }
 
-        [HttpDelete("{email}/{listName}/{productName}")]
+        [HttpDelete("{item}/{email}")]
 
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
 
-        public IActionResult DeleteProduct(string email,string listName,string productName)
+        public IActionResult Delete(Item item, string email)
         {
             try
             {
-
-                Item item = new Item();
-                // Call the AddUser method in UsersDB to add the user
-                item.DeleteProduct(email,listName,productName);
-
+             
                 // Return success response
-                return Ok("User deleted successfully.");
+                return Ok(Item.DeleteProduct(item.ProductName, email));
+
 
             }
             catch (Exception ex)
@@ -55,29 +48,43 @@ namespace groceriesApp.Controllers
             }
         }
 
-
-        [HttpPost("{email}/{categoryName}")]
-
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpPut("{item}/{email}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-
-        public IActionResult AddCategory(string email, string categoryName)
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public IActionResult Put(Item item, string email)
         {
+
             try
             {
 
-
-                Item item = new Item();
-                item.AddCategory(email, categoryName);
-
                 // Return success response
-                return Ok("Item added successfully.");
+                return Ok(Item.UpdateProduct(item.ProductName, email));
+
+
             }
             catch (Exception ex)
             {
+                // Return error response
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
+           
         }
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<Item> Get(string email)
+        {
+            try
+            {
+                return Ok(Item.GetListByEmail(email));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, e.Message);
+            }
+        }
+
 
     }
 }

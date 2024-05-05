@@ -1,19 +1,13 @@
+using Microsoft.Extensions.DependencyInjection;
+// Add services to the container.
 var builder = WebApplication.CreateBuilder(args);
 
+//builder.Services.AddDbContext<Ex1Context>(options =>
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("Ex1Context") ?? throw new InvalidOperationException("Connection string 'Ex1Context' not found.")));
+
 // Add services to the container.
+
 builder.Services.AddControllers();
-
-// Configure CORS
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(builder =>
-    {
-        builder.AllowAnyOrigin()
-               .AllowAnyHeader()
-               .AllowAnyMethod();
-    });
-});
-
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -21,17 +15,14 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (true)
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
-
-// Enable CORS with the default policy
-app.UseCors();
-
+app.UseCors(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 app.UseAuthorization();
 
 app.MapControllers();

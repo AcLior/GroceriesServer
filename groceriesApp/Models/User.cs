@@ -12,10 +12,10 @@
             return $"  {Email} {Password}";
         }
 
-        public void AddUser(User user)
+        public bool AddUser(User user)
         {
             UsersDB dbs = new UsersDB();
-            dbs.AddUser(user);
+            return dbs.AddUser(user);
         }
         public void DeleteUser(string email)
         {

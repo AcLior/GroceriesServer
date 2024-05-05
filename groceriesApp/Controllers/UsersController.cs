@@ -52,7 +52,7 @@ namespace groceriesApp.Controllers
 
         [HttpPost]
 
-        public IActionResult AddUser([FromBody] User user)
+        public bool AddUser([FromBody] User user)
         {
             try
             {
@@ -61,12 +61,12 @@ namespace groceriesApp.Controllers
                 u.AddUser(user);
 
                 // Return success response
-                return Ok("User added successfully.");
+                return true;
             }
             catch (Exception ex)
             {
                 // Return error response
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return false;
             }
         }
      

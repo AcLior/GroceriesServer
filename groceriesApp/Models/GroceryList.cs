@@ -22,6 +22,12 @@ namespace groceriesApp.Models
 
             return gl.GetListID(email,listName);
         }
+        //public static int GetListByEmail(string email)
+        //{
+        //    GroceryListDB gl = new GroceryListDB();
+
+        //    return gl.GetListByEmail(email);
+        //}
 
     }
 }
