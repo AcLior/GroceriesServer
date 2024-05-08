@@ -2,7 +2,9 @@
 {
     public class Item
     {
-        public string ProductName { get; set; }    
+        public string Email { get; set; }
+        public string ProductName { get; set; }   
+        
         public string Category { get; set; }
 
         public string Photo { get; set; }
@@ -13,10 +15,10 @@
                  
                 
 
-        public static Item[] AddProduct(Item item, string email)
+        public static bool AddProduct(Item item)
         {
             ItemsDB dbs = new ItemsDB();
-            return dbs.AddProduct(item,email);
+            return dbs.AddProduct(item);
         }
         public static Item[]  DeleteProduct(string productName,string email)
         {

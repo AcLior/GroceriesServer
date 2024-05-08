@@ -22,49 +22,52 @@ namespace groceriesApp.Models
             return con;
         }
 
-        public bool AddUser(User user)
+        public bool AddUser(string email, string password)
         {
-            SqlConnection con;
-            SqlCommand cmd;
+            SqlConnection con = null;
+            SqlCommand cmd = null;
 
             try
             {
                 con = connect("myProjDB"); // create the connection
-            }
-            catch (Exception ex)
-            {
-                // write to log
-                throw (ex);
-            }
+                cmd = CreateCommandWithStoredProcedure("AddUser", con, new Dictionary<string, object>
+        {
+            { "@Email", email },
+            { "@Password", password }
+        }); // create the command
 
-            bool success = false;
-
-            Dictionary<string, object> paramDic = new Dictionary<string, object>();
-            paramDic.Add("@Email", user.Email);
-            paramDic.Add("@Password", user.Password);
-
-            cmd = CreateCommandWithStoredProcedure("AddUser", con, paramDic); // create the command
-
-            try
-            {
                 // Execute the command and get the return value
-                success = (int)cmd.ExecuteScalar() == 1;
+                object result = cmd.ExecuteScalar();
+
+                // Check if the result is not null and is convertible to int
+                if (result != null && int.TryParse(result.ToString(), out int returnValue))
+                {
+                    return returnValue == 1;
+                }
+                else
+                {
+                    // Log unexpected result
+                    Console.WriteLine("Unexpected return value from stored procedure.");
+                    return false;
+                }
             }
             catch (Exception ex)
             {
-                // write to log
-                throw (ex);
+                // Log exception
+                Console.WriteLine("Error occurred: " + ex.Message);
+                throw; // Rethrow the exception to propagate it to the caller
             }
             finally
             {
+                if (cmd != null)
+                {
+                    cmd.Dispose();
+                }
                 if (con != null)
                 {
-                    // close the db connection
                     con.Close();
                 }
             }
-
-            return success;
         }
 
 
@@ -114,9 +117,8 @@ namespace groceriesApp.Models
             }
         }
 
-        public int GetID(string email)
+        public bool CheckUser(string email, string password)
         {
-
             SqlConnection con;
             SqlCommand cmd;
 
@@ -130,30 +132,37 @@ namespace groceriesApp.Models
                 throw (ex);
             }
 
-
-            cmd = CreateCommandWithStoredProcedure("getID", con, null);             // create the command
-
-
             try
             {
-                SqlDataReader dataReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+                // Create the command with the CheckUserExistence stored procedure
+                cmd = CreateCommandWithStoredProcedure("CheckUser", con, null);
 
-                while (dataReader.Read())
+                // Add parameters for email and password
+                cmd.Parameters.AddWithValue("@Email", email);
+                cmd.Parameters.AddWithValue("@Password", password);
+
+                // Execute the command
+                SqlDataReader dataReader = cmd.ExecuteReader();
+
+                // Check if any rows are returned (i.e., if the user exists)
+                bool userExists = false;
+                if (dataReader.Read())
                 {
-                    if(String.Compare(email, dataReader["Email"].ToString()) == 0)
-                    {
-                        return Convert.ToInt32(dataReader["UserID"]);
-                    }
+                    // Check if the result is 1 (user exists)
+                    userExists = Convert.ToInt32(dataReader[0]) == 1;
                 }
-                return -1;
 
+                // Close the data reader
+                dataReader.Close();
+
+                // Return true if the user exists, false otherwise
+                return userExists;
             }
             catch (Exception ex)
             {
                 // write to log
                 throw (ex);
             }
-
             finally
             {
                 if (con != null)
@@ -161,9 +170,7 @@ namespace groceriesApp.Models
                     // close the db connection
                     con.Close();
                 }
-                
             }
-           
         }
 
 

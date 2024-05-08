@@ -9,16 +9,18 @@ namespace groceriesApp.Controllers
     public class ItemsController : ControllerBase
     {
         [HttpPost]
-      
+        [Route("AddProduct")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
        
-        public IActionResult Post(Item item,string email)
+        public IActionResult Post([FromBody]Item item)
         {
             try
             {
+                bool success = Item.AddProduct(item);
+
                 // Return success response
-                return Ok(Item.AddProduct(item, email));
+                return Ok(success);
             }
             catch (Exception ex)
             {
@@ -26,18 +28,18 @@ namespace groceriesApp.Controllers
             }
         }
 
-        [HttpDelete("{item}/{email}")]
-
+        [HttpDelete]
+        [Route("DeleteProduct")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
 
-        public IActionResult Delete(Item item, string email)
+        public IActionResult Delete(string productName, string email)
         {
             try
             {
              
                 // Return success response
-                return Ok(Item.DeleteProduct(item.ProductName, email));
+                return Ok(Item.DeleteProduct(productName, email));
 
 
             }
@@ -48,18 +50,19 @@ namespace groceriesApp.Controllers
             }
         }
 
-        [HttpPut("{item}/{email}")]
+        [HttpPut]
+        [Route("ChangeIsDone")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public IActionResult Put(Item item, string email)
+        public IActionResult Put(string productName, string email)
         {
 
             try
             {
 
                 // Return success response
-                return Ok(Item.UpdateProduct(item.ProductName, email));
+                return Ok(Item.UpdateProduct(productName, email));
 
 
             }
@@ -71,6 +74,7 @@ namespace groceriesApp.Controllers
            
         }
         [HttpGet]
+        [Route("GetProducts")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<Item> Get(string email)

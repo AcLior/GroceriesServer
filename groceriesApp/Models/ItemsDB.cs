@@ -20,7 +20,7 @@ namespace groceriesApp.Models
             return con;
         }
 
-        public Item[] AddProduct(Item item, string email)
+        public bool AddProduct(Item item)
         {
             List<Item> itemList = new List<Item>();
 
@@ -41,7 +41,7 @@ namespace groceriesApp.Models
             {
                 // Create the dictionary for stored procedure parameters
                 Dictionary<string, object> paramDic = new Dictionary<string, object>();
-                paramDic.Add("@Email", email);
+                paramDic.Add("@Email", item.Email);
                 paramDic.Add("@ProductName", item.ProductName);
                 paramDic.Add("@CategoryName", item.Category);
                 paramDic.Add("@Quantity", item.Quantity);
@@ -66,6 +66,7 @@ namespace groceriesApp.Models
             {
                 // write to log
                 throw (ex);
+             
             }
             finally
             {
@@ -77,7 +78,13 @@ namespace groceriesApp.Models
             }
 
             // Return the array of items
-            return GetListByEmail(email).ToArray();
+            if (GetListByEmail(item.Email).ToArray() != null)
+            {
+                return true;
+            }
+            return false;
+
+
         }
 
 

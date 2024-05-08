@@ -6,26 +6,20 @@
         public string Email { get; set; }
         public string Password { get; set; }
 
-     
-        public override string ToString()
-        {
-            return $"  {Email} {Password}";
-        }
-
-        public bool AddUser(User user)
+        public bool AddUser(string email, string password)
         {
             UsersDB dbs = new UsersDB();
-            return dbs.AddUser(user);
+            return dbs.AddUser(email,password);
         }
         public void DeleteUser(string email)
         {
             UsersDB dbs = new UsersDB();
             dbs.DeleteUser(email);
         }
-        public int GetID(string email)
+        public bool CheckUser(string email,string password)
         {
             UsersDB dbs = new UsersDB();
-            return dbs.GetID(email);
+            return dbs.CheckUser(email,password);
         }
     }
 }

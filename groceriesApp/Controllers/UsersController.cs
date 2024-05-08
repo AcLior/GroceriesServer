@@ -12,61 +12,49 @@ namespace groceriesApp.Controllers
     {
        
 
-        [HttpGet("{email}")]
-     
-        public  int GetID(string email)
+        [HttpPost]
+        [Route("CheckAccount")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult Post(string email,string password)
         {
             try
             {
-                User u = new User();
-
+                
+                User user = new User();
+               
                 // Return success response
-                return u.GetID(email); ;
+                return Ok(user.CheckUser(email, password));
               
                
             }
             catch (Exception e)
             {
-                return -1;
-            }
+                return StatusCode(500, $"An error occurred: {e.Message}");
+    }
         }
 
-        [HttpGet]
-
-        public string Get()
-        {
-            try
-            {
-               
-
-                // Return success response
-                return "SUCCESS!!!!!" ;
-
-
-            }
-            catch (Exception e)
-            {
-                return "ERRORRRRRR";
-            }
-        }
 
         [HttpPost]
-
-        public bool AddUser([FromBody] User user)
+        [Route("Register")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult PostReg(string email,string password)
         {
             try
             {
-                User u = new User();
-                // Call the AddUser method in UsersDB to add the user
-                u.AddUser(user);
+                User user = new User();
+                // Call the AddUser method in UsersDB to add the user     
 
                 // Return success response
-                return true;
+                return Ok(user.AddUser(email,password));
+
             }
             catch (Exception ex)
             {
                 // Return error response
-                return false;
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+
             }
         }
      
@@ -75,7 +63,7 @@ namespace groceriesApp.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         
-        public IActionResult DeleteUser(string email)
+        public IActionResult Delete(string email)
         {
             try
             {
